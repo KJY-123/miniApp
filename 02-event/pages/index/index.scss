@@ -1,0 +1,15 @@
+input {
+    border: 1px solid #cccccc;
+}
+
+.line {
+    border-top: 10rpx solid lightseagreen;
+    margin: 100rpx 0;
+}
+
+.catch {
+    display: flex;
+    height: 300rpx;
+    background-color: skyblue;
+    align-items: center;
+}

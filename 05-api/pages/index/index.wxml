@@ -1,0 +1,3 @@
+<button type="warn" bind:tap="getData">获取数据</button>
+
+<button style="margin-top: 20px;" type="primary" bind:tap="delHandler">删除商品</button>
