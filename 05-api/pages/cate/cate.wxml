@@ -1,16 +1,6 @@
 
 
-<view>{{ num }}</view>
-<button bind:tap="updateNum">更新num</button>
-
-<view class="line"></view>
-
-<view>{{ userInfo.name }}</view>
-<view>{{ userInfo.age }}</view>
-<button type="warn" bind:tap="updateUserInfo">修改对象类型数据</button>
-
-<view class="line"></view>
-
-<view wx:for="{{ list }}" wx:key="index">{{ item }}</view>
-<!-- <view>{{ list[0].name }}</view> -->
-<button type="primary" bind:tap="updateList">修改数组类型数据</button>
+<button size="mini" plain type="warn" bind:tap="setStorage">存储</button>
+<button size="mini" plain type="primary" bind:tap="getStorage">获取</button>
+<button size="mini" plain type="warn" bind:tap="removeStorage">删除</button>
+<button size="mini" plain type="primary" bind:tap="clearStorage">清空</button>

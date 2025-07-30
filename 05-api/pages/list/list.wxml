@@ -4,3 +4,5 @@
 <!-- navigateBack：返回上一页或者返回前几页，默认只能返回上一页 -->
 <!-- delta：返回的层级，默认是1 -->
 <navigator open-type="navigateBack" delta="1">返回上一页</navigator>
+
+<button plain type="warn" bind:tap="navigateBack">navigateBack</button>

@@ -6,15 +6,33 @@ Page({
      */
     data: {
         numList: [1, 2, 3],
-        fruitList: [
-            {id: 1, name: '🍎', price: 66 },
-            {id: 2, name: '🍋', price: 77},
-            {id: 3, name: '🍌', price: 88 }
-        ],
-        obj: {
-            name: 'tom',
-            age: 10
-        }
+        isTriggered: false
+    },
+
+    // scroll-view 上拉加载更多
+    getMore () {
+        wx.showLoading({
+            title: '数据加载中...',
+          })
+  
+          setTimeout(() =>{
+              const lastNum = this.data.numList[this.data.numList.length-1]
+              this.setData({
+                  numList: [...this.data.numList, lastNum+1, lastNum+2, lastNum+3]
+              })
+              wx.hideLoading()
+          }, 1500)
+    },
+
+    refreshHandler () {
+        wx.showToast({
+          title: '下拉刷新',
+        })
+
+        this.setData({
+            numList: [1, 2, 3],
+            isTriggered: false
+        })
     },
 
     /**
