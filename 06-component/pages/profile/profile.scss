@@ -1,0 +1,22 @@
+.line {
+    border-top: 10rpx solid lightseagreen;
+    margin: 100rpx 0;
+}
+
+.scroll-y {
+    height: 100vh;
+    background-color: #efefef;
+}
+
+view {
+    height: 500rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:nth-child(odd) {
+        background-color: lightskyblue;
+    }
+    &:nth-child(even) {
+        background-color: lightsalmon;
+    }
+}

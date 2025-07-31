@@ -1,0 +1,1 @@
+<view wx:for="{{ numList }}" wx:key="this">{{ item }}</view>

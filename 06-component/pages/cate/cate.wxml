@@ -1,0 +1,15 @@
+
+
+
+<!-- <view class="custom parent">
+    <view>
+        <custom02/>
+        <view class="son test">我是父级页面中的结构</view>
+    </view>
+</view> -->
+
+<custom02/>
+
+<custom03/>
+
+<text class="test">我是组件使用者的样式</text>

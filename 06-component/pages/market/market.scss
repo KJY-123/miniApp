@@ -1,0 +1,12 @@
+view {
+    height: 600rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:nth-child(odd) {
+        background-color: lightblue;
+    }
+    &:nth-child(even) {
+        background-color: lightsalmon;
+    }
+}
