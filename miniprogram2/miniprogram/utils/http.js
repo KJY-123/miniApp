@@ -17,7 +17,7 @@ instance.interceptors.request = (config) => {
     // 判断本地是否存在访问令牌token
     const token = getStorage('token')
 
-    console.log(config)
+    // console.log(config)
 
     if (token) {
         config.header['token'] = token
@@ -49,7 +49,7 @@ instance.interceptors.response = async (response) => {
               showCancel: false // 不显示取消登录
           })
 
-          console.log(res)
+        //   console.log(res)
 
           if (res) {
               // 清除之前失效的 token，同时要清除本地存储的全部信息
