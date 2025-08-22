@@ -13,7 +13,8 @@ class WxRequest {
         header: {
             'Content-type': 'application/json'
         },
-        timeout: 60000 // 默认超时时长，小程序默认的超时时长是 1分钟
+        timeout: 60000, // 默认超时时长，小程序默认的超时时长是 1分钟
+        isLoading: true // 控制是否使用默认的loading
     }
 
     // 定义拦截器对象
@@ -28,6 +29,8 @@ class WxRequest {
         response: (response) => response
     }
 
+    queue = []
+
     // 用户创建和初始化类的属性和方法
     // 在实例化时传入的参数，会被 constructor 形参接收
     constructor (params = {}) {
@@ -35,6 +38,8 @@ class WxRequest {
     }
 
     request (options) {
+        // 如果有新的请求，就清除上一次的定时器
+        this.timerId && clearTimeout(this.timerId)
 
         // 注意：需要先合并完整的请求地址（baseUrl + url）
         options.url = this.default.baseUrl + options.url
@@ -43,43 +48,97 @@ class WxRequest {
         options = {...this.default, ...options}
 
         // 在请求发送之前，添加 loading 效果
-        wx.showLoading()
+        // wx.showLoading()
+
+        if (options.isLoading && options.method !== 'UPLOAD') {
+            // 判断 queue 队列是否为空，如果是空，就显示 loading
+            // 如果不是空，就不显示 loading，不调用 wx.showLoading()
+            this.queue.length === 0 && wx.showLoading()
+    
+            // 立即向 queue 中添加请求标识
+            // 每一个请求标识代表一个请求，标识是自定义的
+            this.queue.push('request')
+        }
 
         // 在请求发送之前，调用请求拦截器，新增或修改请求参数
         options = this.interceptors.request(options)
-
         return new Promise((resolve, reject) =>{
-            wx.request({
-              ...options,
-              // 接口调用成功
-              success: (res) => {
-                  // 不管是成功还是失败响应，都需要调用响应拦截器
-                  // 响应拦截器需要接收服务器响应的数据，然后对数据进行逻辑处理，处理好以后进行返回
-                  // 然后再通过 resolve 将返回的数据抛出去
-
-                  // 在给响应拦截器传递参数时，需要将请求参数也一起传递
-                  // 方便进行代码的调试或者其他逻辑处理，需要先合并参数
-                  // 然后将合并的参数传递给响应拦截器
-
-                  // 添加isSuccess, ture 说明执行了 success 函数
-                  const mergeRes = Object.assign({}, res, { config: options, isSuccess: true })
-                  resolve(this.interceptors.response(mergeRes))
-              },
-
-              // 接口调用失败
-              fail: (err) => {
-                  // 不管是成功还是失败响应，都需要调用响应拦截器
-                  // 添加isSuccess, false 说明执行了 fail 函数
-                  const mergeErr = Object.assign({}, err, { config: options, isSuccess: true })
-                  reject(this.interceptors.response(mergeErr))
-              },
-
-              // 接口结束调用的函数（不管成功还是失败都会调用）
-              complete: () => {
-                  // 隐藏 loading
-                  wx.hideLoading()
-              }
-            })
+            if (options.method === 'UPLOAD') {
+                wx.uploadFile({
+                    ...options,
+    
+                    success: res => {
+                        // 需要将服务器返回的 JSON 字符串，通过 JSON.parse 转为对象
+                        res.data = JSON.parse(res.data)
+    
+                        // 合并参数
+                        const mergeRes = Object.assign({}, res, {
+                            config: options,
+                            isSuccess: true
+                        })
+    
+                        resolve(this.interceptors.response(mergeRes))
+                    },
+    
+                    fail: err => {
+                        // 合并参数
+                        const mergeErr = Object.assign({}, err, {
+                            config: options,
+                            isSuccess: false
+                        })
+    
+                        reject(this.interceptors.response(mergeErr))
+                    }
+                })
+            } else {
+                wx.request({
+                    ...options,
+                    // 接口调用成功
+                    success: (res) => {
+                        // 不管是成功还是失败响应，都需要调用响应拦截器
+                        // 响应拦截器需要接收服务器响应的数据，然后对数据进行逻辑处理，处理好以后进行返回
+                        // 然后再通过 resolve 将返回的数据抛出去
+        
+                        // 在给响应拦截器传递参数时，需要将请求参数也一起传递
+                        // 方便进行代码的调试或者其他逻辑处理，需要先合并参数
+                        // 然后将合并的参数传递给响应拦截器
+        
+                        // 添加isSuccess, ture 说明执行了 success 函数
+                        const mergeRes = Object.assign({}, res, { config: options, isSuccess: true })
+                        resolve(this.interceptors.response(mergeRes))
+                    },
+        
+                    // 接口调用失败
+                    fail: (err) => {
+                        // 不管是成功还是失败响应，都需要调用响应拦截器
+                        // 添加isSuccess, false 说明执行了 fail 函数
+                        const mergeErr = Object.assign({}, err, { config: options, isSuccess: true })
+                        reject(this.interceptors.response(mergeErr))
+                    },
+        
+                    // 接口结束调用的函数（不管成功还是失败都会调用）
+                    complete: () => {
+                        if (options.isLoading) {
+                            // 接口调用完成后从 queue 队列中删除一个标识
+                            this.queue.pop()
+                            
+                            this.queue.length === 0 && this.queue.push('request')
+        
+                            this.timerId = setTimeout(() =>{
+                                this.queue.pop()
+        
+                                // 如果为空，说明并发请求发送完成了，需要调用 wx.hideLoading()
+                                this.queue.length === 0 && wx.hideLoading()
+        
+                                clearTimeout(this.timerId)
+                            }, 1)
+        
+                            // 隐藏 loading
+                            // wx.hideLoading()
+                        }
+                    }
+                    })
+            }
         })
     }
 
@@ -103,6 +162,13 @@ class WxRequest {
         // 通过展开运算符来接收传递的参数
         // 那么展开运算符会将传入的参数转为数组
         return Promise.all(promise) 
+    }
+
+    // upload 实例方法，用来对 wx.uploadFile 进行封装
+    upload(url, filePath, name = 'file', config = {}) {
+        return this.request(
+            Object.assign({ url, filePath, name, method:'UPLOAD' }, config)
+        )
     }
 }
 

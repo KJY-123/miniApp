@@ -1,10 +1,13 @@
 import WxRequest from './request'
 import { getStorage, clearStorage } from './storage'
+import { env } from './env'
 
 // 对 WxRequest 实例化
 const instance = new WxRequest({
-    baseUrl: 'https://gmall-prod.atguigu.cn/mall-api',
-    timeout: 15000
+    // baseUrl: 'https://gmall-prod.atguigu.cn/mall-api',
+    baseUrl: env.baseUrl,
+    timeout: 15000,
+    isLoading: false
 })
 
 // 会覆盖默认的拦截器

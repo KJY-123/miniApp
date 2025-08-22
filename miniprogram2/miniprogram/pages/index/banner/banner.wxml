@@ -8,14 +8,18 @@
     interval="2000"
     duration="1000"
     indicator-color="rgba(0, 0, 0, .3)"
+    bindchange="getSwiperIndex"
   >
+    <!-- 通过 block 标签对轮播图进行渲染 -->
     <block wx:for="{{ bannerList }}" wx:key="index">
+      <!-- swiper-item 单个滑块视图容器，每一张轮播图 -->
       <swiper-item class="swiper-item">
+        <!-- 通过 navigator 组件进行图片跳转 -->
         <navigator
           class="navigator"
-          url="/pages/goods/detail/detail?goodsId=id"
+          url="/pages/goods/detail/detail?goodsId={{ item.id }}"
         >
-          <image class="img" src="{{ item }}"></image>
+          <image class="img" src="{{ item.imageUrl }}"></image>
         </navigator>
       </swiper-item>
     </block>
@@ -28,7 +32,7 @@
     <text
       wx:for="{{bannerList.length}}"
       wx:key="id"
-      class="{{ 'active rectangle' }}"
+      class="{{ index === activeIndex ? 'active rectangle' : 'rectangle' }}"
     ></text>
   </view>
 </view>
