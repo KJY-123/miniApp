@@ -10,7 +10,8 @@ Page({
     categoryList: [], // 商品导航区
     activeList: [], // 活动渲染区
     hotList: [], // 人气推荐
-    guessList: [] // 猜你喜欢
+    guessList: [], // 猜你喜欢
+    loading: true // 是否显示骨架屏，默认显示
   },
 
   // 获取首页数据
@@ -37,6 +38,7 @@ Page({
         activeList: res[2].data,
         guessList: res[3].data,
         hotList: res[4].data,
+        loading: false
       })
   },
 

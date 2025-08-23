@@ -20,5 +20,17 @@
     "ignoreDevUnusedFiles": true
   },
   "libVersion": "3.9.0",
-  "condition": {}
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "商品分类",
+          "pathName": "pages/category/category",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
+        }
+      ]
+    }
+  }
 }
