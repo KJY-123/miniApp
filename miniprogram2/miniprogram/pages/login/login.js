@@ -28,13 +28,14 @@ ComponentWithStore({
                         // 赋值 store
                         this.setToken('testToken')
 
+                        // 获取用户信息
                         this.getUserInfo()
+
+                        // 返回上级页面
+                        wx.navigateBack()
                     } else {
                         toast({ title: '授权失败，请重新授权' })
                     }
-                },
-                fail: () => {
-
                 }
             })
         },
@@ -49,7 +50,7 @@ ComponentWithStore({
               withCredentials: true,
               success: (result) => {
                   console.log(result)
-                  setStorage(result.userInfo)
+                  setStorage('userInfo', result.userInfo)
                   this.setUserInfo(result.userInfo)
               },
               fail: (res) => {},
